@@ -1,0 +1,12 @@
+*pkl
+*pt
+__pycache__
+*.pyc
+*.pyo
+*gpickle
+*.json
+*.log
+*.csv
+*.jsonl
+
+trustAI
