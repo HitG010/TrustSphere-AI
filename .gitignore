@@ -1,4 +1,14 @@
+*.pt
+*.pth
+trustAI
+__pycache__
+*.json
+*.jsonl
 *pkl
+*.csv
+*.tsv
+*.log
+*gpickle*pkl
 *pt
 __pycache__
 *.pyc

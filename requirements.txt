@@ -1,0 +1,15 @@
+torch
+torchvision
+numpy
+dgl==1.1.2
+packaging
+scikit-learn
+transformers
+torch-geometric
+networkx
+matplotlib
+community
+igraph
+leidenalg
+sentence_transformers
+pyvis
