@@ -171,8 +171,8 @@ import tempfile
 import os
 
 # Load model and reference embeddings once at startup
-model = get_model()
-ref_embeddings, ref_labels = load_embeddings(model)
+# model = get_model()
+# ref_embeddings, ref_labels = load_embeddings(model)
 
 def detect_brand(test_embedding, ref_embeddings, ref_labels, threshold=SIMILARITY_THRESHOLD):
     sims = cosine_similarity(test_embedding, ref_embeddings)[0]

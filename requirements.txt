@@ -18,4 +18,3 @@ langchain_community
 langchain_huggingface
 langchain_groq
 faiss-cpu
-# Additional dependencies for specific functionalities
