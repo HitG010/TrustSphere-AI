@@ -10,7 +10,7 @@ export default function Navbar() {
             <Link to="/trustsphere/reviewAnalyzer" className="hover:text-blue-500">Review Analyzer</Link>
             <Link to="/trustsphere/imageChecker" className="hover:text-blue-500">Image Checker</Link>
             <Link to="/trustsphere/trustGraph" className="hover:text-blue-500">Trust Graph</Link>
-            <Link to="/trustsphere/trustScore" className="hover:text-blue-500">Trust Score</Link>
+            {/* <Link to="/trustsphere/trustScore" className="hover:text-blue-500">Trust Score</Link> */}
         </div>
 
         {/* <div className="md:hidden">

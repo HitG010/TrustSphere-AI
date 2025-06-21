@@ -1,14 +1,26 @@
 import express from 'express';
+import { analyzeReview } from '../services/aiClient.js';
 const router = express.Router();
 
-router.post('/', (req, res) => {
-    const { productId, reviewText } = req.body;
+router.post('/', async (req, res) => {
+    const { review } = req.body;
 
+    if(!review) {
+        return res.status(400).json({
+            message : "Review text is required."
+        })
+    }
 
-    res.json({
-        productId,
-        trustScore: 87,
-    });
+    try {
+        const result = await analyzeReview(review);
+        res.json(result);
+    } catch(e) {
+        console.log(e);
+        
+        res.status(500).json({
+            error: e.message
+        })
+    }
 });
 
 export default router;
