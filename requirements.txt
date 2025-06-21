@@ -13,3 +13,9 @@ igraph
 leidenalg
 sentence_transformers
 pyvis
+langchain
+langchain_community
+langchain_huggingface
+langchain_groq
+faiss-cpu
+# Additional dependencies for specific functionalities

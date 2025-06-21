@@ -1,4 +1,4 @@
-
+ 
 # from langchain.chat_models import ChatOpenAI
 from langchain.agents import Tool, initialize_agent
 from langchain.vectorstores import FAISS
@@ -82,7 +82,7 @@ def add_embedding(review_title, review_text, metadata):
         page_content=f"{review_title}\n{review_text}",
         metadata=metadata
     )
-    faiss_index = FAISS.load_local("faiss_review_index", HuggingFaceEmbeddings(), allow_dangerous_deserialization=True)
+    faiss_index = FAISS.load_local("server/models/Review_Analysis_LLM/faiss_review_index", HuggingFaceEmbeddings(), allow_dangerous_deserialization=True)
     ### check if the review is already in the index
     existing_docs = faiss_index.similarity_search(
         query=review_title,
@@ -96,7 +96,7 @@ def check_review_spike(metadata):
     user_id = metadata.get("user_id")
     # vectorstore = FAISS.load_local("faiss_review_index", HuggingFaceEmbeddings())
     # faiss_review_index = FAISS(vectorstore=vectorstore)
-    faiss_index = FAISS.load_local("faiss_review_index", HuggingFaceEmbeddings(), allow_dangerous_deserialization=True)
+    faiss_index = FAISS.load_local("server/models/Review_Analysis_LLM/faiss_review_index", HuggingFaceEmbeddings(), allow_dangerous_deserialization=True)
     user_reviews = faiss_index.similarity_search(
         query=".",
         k=100,
@@ -180,7 +180,7 @@ def similarity_search_tool(review_str):
     full_review = fields["title"] + ". " + fields["text"]
 
     embedding = HuggingFaceEmbeddings().embed_query(full_review)
-    faiss_index = FAISS.load_local("faiss_review_index", HuggingFaceEmbeddings(), allow_dangerous_deserialization=True)
+    faiss_index = FAISS.load_local("server/models/Review_Analysis_LLM/faiss_review_index", HuggingFaceEmbeddings(), allow_dangerous_deserialization=True)
     results = faiss_index.similarity_search_by_vector(embedding, k=3)
     # similar_reviews = [res.page_content for res in results]
     similar_reviews = []
@@ -314,4 +314,3 @@ def analyze_review(review):
     
     response = chain.invoke({"input": review_input})
     return response["output"]
-

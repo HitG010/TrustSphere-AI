@@ -20,3 +20,5 @@ __pycache__
 *.jsonl
 
 trustAI
+
+server/models/Review_Analysis_LLM/faiss_review_index
