@@ -170,16 +170,16 @@ import numpy as np
 import tempfile
 import os
 
-# Load model and reference embeddings once at startup
-# model = get_model()
-# ref_embeddings, ref_labels = load_embeddings(model)
+# Load model and reference embeddings once
+model = get_model()
+ref_embeddings, ref_labels = load_embeddings(model)
 
 def detect_brand(test_embedding, ref_embeddings, ref_labels, threshold=SIMILARITY_THRESHOLD):
     sims = cosine_similarity(test_embedding, ref_embeddings)[0]
     max_sim_idx = np.argmax(sims)
     max_score = sims[max_sim_idx]
     predicted_label = ref_labels[max_sim_idx]
-    is_authentic = max_score >= threshold
+    is_authentic = bool(max_score >= threshold)
 
     return {
         "predicted_label": predicted_label,
@@ -189,21 +189,21 @@ def detect_brand(test_embedding, ref_embeddings, ref_labels, threshold=SIMILARIT
     }
 
 @app.route("/api/detect_logo", methods=["POST"])
-def detect_logo():
-    if 'image' not in request.files:
-        return jsonify({"status": "error", "message": "Missing image file"}), 400
+def detect_logo_from_path():
+    data = request.get_json()
+    if not data or "image_path" not in data:
+        return jsonify({"status": "error", "message": "Missing 'image_path' in request"}), 400
 
-    image_file = request.files['image']
+    image_path = data["image_path"]
+
+    if not os.path.exists(image_path):
+        return jsonify({"status": "error", "message": f"File not found: {image_path}"}), 404
 
     try:
-        # Save to a temporary file
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp:
-            image_path = tmp.name
-            image_file.save(image_path)
-
         test_embedding = get_embedding(image_path, model)
+        print(f"Test embedding shape: {test_embedding.shape}")
         result = detect_brand(test_embedding, ref_embeddings, ref_labels)
-
+        print(f"Detection result: {result}")
         return jsonify({
             "status": "success",
             "prediction": result
@@ -212,9 +212,6 @@ def detect_logo():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
-    finally:
-        if os.path.exists(image_path):
-            os.remove(image_path)
 
 if __name__ == "__main__":
     app.run(debug=True, port = 8080)

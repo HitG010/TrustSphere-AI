@@ -1,5 +1,6 @@
 from torchvision import transforms
 from PIL import Image
+import torch
 from Logo.config import DEVICE
 
 transform = transforms.Compose([

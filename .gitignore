@@ -22,4 +22,6 @@ __pycache__
 
 trustAI
 
+data
+
 server/models/Review_Analysis_LLM/faiss_review_index
