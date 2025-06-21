@@ -11,7 +11,7 @@ export default function App() {
       <Route path="/trustsphere" element={<TrustSphereLayout />}>
         <Route path="reviewAnalyzer" element={<ReviewAnalyzer />} />
         <Route path="imageChecker" element={<ImageChecker/>}/>
-        <Route path="trustScore" element={<TrustScore/>}/>
+        {/* <Route path="trustScore" element={<TrustScore/>}/> */}
         <Route path="trustGraph" element={<TrustGraph/>}/>
       </Route>
     </Routes>
