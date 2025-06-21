@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/review/analyze', reviewRoutes);
+app.use('/api/review', reviewRoutes);
 app.use('/api/image', imageRoutes);
 app.use('/api/graph', graphRoutes);
 app.use('/api/trust', trustRoutes);

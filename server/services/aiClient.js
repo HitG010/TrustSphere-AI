@@ -4,11 +4,27 @@ import FormData from "form-data";
 
 export const analyzeReview = async (review) => {
     try {
-        const response = await axios.post('http://localhost:5001/analyze-review', { review });
+        const payload = {
+            title: review.title || "No Title",
+            text: review.text,
+            metadata: {
+                user_id: review.metadata?.user_id || "unknown_user",
+                asin: review.metadata?.asin || "unknown_asin",
+                timestamp: review.metadata?.timestamp || new Date().toISOString(),
+            }
+        };
+        console.log("Payload sent to AI backend:", payload);
+
+        const response = await axios.post('http://localhost:8080/api/analyze_review', payload);
+        console.log("AI server response data:", response.data);
         return response.data;
     } catch (error) {
-        console.error('AI model error:', error.message);
-        throw new Error('Failed to fetch analysis');
+        console.error("Error calling AI server:", error.message);
+        if (error.response) {
+            console.error("Response data:", error.response.data);
+            console.error("Status code:", error.response.status);
+        }
+        throw error;
     }
 };
 
