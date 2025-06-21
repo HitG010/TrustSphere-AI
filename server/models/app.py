@@ -211,6 +211,73 @@ def detect_logo_from_path():
 
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
+    
+    
+from difflib import SequenceMatcher
+import easyocr
+
+app = Flask(__name__)
+
+class OCRMatcher:
+    def __init__(self, languages=['en'], use_gpu=False, threshold=0.6):
+        self.reader = easyocr.Reader(languages, gpu=use_gpu)
+        self.threshold = threshold
+
+    def extract_text(self, image_path):
+        if not os.path.exists(image_path):
+            raise FileNotFoundError(f"File not found: {image_path}")
+        result = self.reader.readtext(image_path, detail=0)
+        extracted_text = " ".join(result)
+        return extracted_text
+
+    def compare_texts(self, ocr_text, reference_text):
+        similarity = SequenceMatcher(None, ocr_text.lower(), reference_text.lower()).ratio()
+        match = similarity >= self.threshold
+        return similarity, match
+
+    def run_match(self, image_path, reference_text):
+        ocr_text = self.extract_text(image_path)
+        similarity, match = self.compare_texts(ocr_text, reference_text)
+        return {
+            "extracted_text": ocr_text,
+            "similarity_score": round(similarity, 4),
+            "match": match,
+            "threshold": self.threshold
+        }
+
+matcher = OCRMatcher()
+
+@app.route("/api/ocr_match", methods=["POST"])
+def ocr_match():
+    data = request.get_json()
+
+    if not data or "image_path" not in data or "reference_text" not in data:
+        return jsonify({
+            "status": "error",
+            "message": "Missing required fields: 'image_path' and 'reference_text'"
+        }), 400
+
+    image_path = data["image_path"]
+    reference_text = data["reference_text"]
+
+    if not os.path.exists(image_path):
+        return jsonify({
+            "status": "error",
+            "message": f"File not found: {image_path}"
+        }), 404
+
+    try:
+        result = matcher.run_match(image_path, reference_text)
+        return jsonify({
+            "status": "success",
+            "result": result
+        })
+
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "message": str(e)
+        }), 500
 
 
 if __name__ == "__main__":

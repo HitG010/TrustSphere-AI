@@ -18,3 +18,4 @@ langchain_community
 langchain_huggingface
 langchain_groq
 faiss-cpu
+easyocr
