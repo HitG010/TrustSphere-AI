@@ -2,7 +2,7 @@ import express from 'express';
 import dotenv from "dotenv"
 import cors from 'cors';
 import reviewRoutes from './routes/review.js';
-import imageRoutes from './routes/image.js';
+import logoRoutes from './routes/logoCheck.js';
 import graphRoutes from './routes/graph.js';
 import trustRoutes from './routes/trust.js';
 
@@ -15,7 +15,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api/review', reviewRoutes);
-app.use('/api/image', imageRoutes);
+app.use('/api/logo_check', logoRoutes);
 app.use('/api/graph', graphRoutes);
 app.use('/api/trust', trustRoutes);
 
