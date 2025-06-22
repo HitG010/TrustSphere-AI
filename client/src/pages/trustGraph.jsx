@@ -80,7 +80,9 @@ export default function TrustGraph() {
     const fetchTop3 = async () => {
         try {
             const res = await axios.post("http://localhost:5000/api/graph");
-            console.log(res.data);
+            console.log("res", res);
+
+            console.log("data", res.data);
             setMessage("");
             setTopRings(res.data.top_rings);
             setGraph(null);
@@ -149,11 +151,13 @@ export default function TrustGraph() {
       <div className="mt-10">
         <h2 className="text-2xl font-semibold mb-6 text-green-400 text-center">Top 3 Rings</h2>
         {topRings.map((ring, idx) => {
-          const { nodes, edges } = convertToReactFlowData(ring.nodes, ring.edges, ring.ring_id);
+          const productId = ring.products[0]; 
+          const { nodes, edges } = convertToReactFlowData(ring.nodes, ring.edges, productId);
+
           return (
             <div key={ring.ring_id} className="mb-10 p-6 bg-gray-900 rounded shadow-md">
               <h3 className="text-lg font-medium text-white mb-2">
-                Ring #{idx + 1} — Ring ID: <span className="text-cyan-400">{ring.ring_id}</span>
+                Ring #{idx + 1} — ProductID: <span className="text-cyan-400">{ring.products[0]}</span>
               </h3>
               <div className="h-[500px] w-full bg-gray-800 rounded">
                 <ReactFlow
@@ -163,13 +167,13 @@ export default function TrustGraph() {
                   fitViewOptions={{ padding: 0.2 }}
                 >
                   <Controls />
-                  {/* <MiniMap /> */}
                   <Background />
                 </ReactFlow>
               </div>
             </div>
           );
         })}
+
       </div>
     )}
   </div>
