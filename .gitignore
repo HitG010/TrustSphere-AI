@@ -2,7 +2,7 @@
 *.pth
 trustAI
 __pycache__
-*.json
+
 *.jsonl
 *pkl
 *.csv
@@ -14,7 +14,7 @@ __pycache__
 *.pyc
 *.pyo
 *gpickle
-*.json
+
 *.log
 *.csv
 *.jsonl
