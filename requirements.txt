@@ -1,7 +1,7 @@
 torch
 torchvision
 numpy
-dgl==1.1.2
+dgl==2.2.1
 packaging
 scikit-learn
 transformers
