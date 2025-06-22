@@ -5,7 +5,8 @@
 
 [![TrustSphere Intro Video](./assets/trustSphereThumbnail.png)](https://youtu.be/IsfnttIBfAc)
 
-> **An LLM-powered Trust & Safety platform for detecting review fraud, counterfeit listings, and seller manipulation in e-commerce.**
+> **Presenting TrustSphere AI:**
+> An LLM-powered Trust & Safety platform for detecting review fraud, counterfeit listings, and seller manipulation in e-commerce.
 
 ![TrustSphere Landing Page](./assets/landingPage.png)
 
@@ -22,7 +23,7 @@ We leverage **LLMs**, **Computer Vision**, **Graph Intelligence**, and **Explain
 ### ✅ Review Analysis with LLMs + LangChain
 - Analyze sentiment, detect AI-generated content, and flag suspicious reviews
 - Uses similarity search (FAISS + embeddings) to detect review spamming
-- Tech Stack: `LangChain`, `HuggingFace Transformers`, `FAISS`
+- Tech Stack: `LangChain`, `HuggingFace Transformers`, `FAISS`, `Kafka`, `AWS Lambda`
 
 ![LLM Review Analysis](./assets/llmReviewAnalysisArchitecture.png)
 
