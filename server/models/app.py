@@ -4,7 +4,9 @@ import networkx as nx
 import numpy as np
 import pickle
 from sklearn.metrics.pairwise import cosine_similarity
+import torch
 from Review_Analysis_LLM.llm_converted import analyze_review
+import cv2
 
 app = Flask(__name__)
 
@@ -277,6 +279,70 @@ def ocr_match():
             "status": "error",
             "message": str(e)
         }), 500
+        
+        
+
+from grad_cam import ResNetWithEmbedding, GradCAM, preprocess_image, predict_with_similarity_and_gradcam, show_cam_on_image
+
+# Paths and configs
+NUM_CLASSES = 3
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+MODEL_WEIGHTS_PATH = "model_weights.pth"
+EMBEDDINGS_PATH = "train_embeddings.pt"
+LABELS_PATH = "train_labels.pt"
+DATA_DIR = "data/Amazon"
+GRADCAM_OUTPUT_DIR = "data/gradcam_outputs"
+SIMILARITY_THRESHOLD = 0.7
+
+# Ensure GradCAM output folder exists
+os.makedirs(GRADCAM_OUTPUT_DIR, exist_ok=True)
+
+# Load model and data once
+model = ResNetWithEmbedding(NUM_CLASSES).to(DEVICE)
+model.load_state_dict(torch.load(MODEL_WEIGHTS_PATH, map_location=DEVICE))
+model.eval()
+
+ref_embeddings = torch.load(EMBEDDINGS_PATH).to("cpu")
+ref_labels = torch.load(LABELS_PATH).to("cpu")
+class_names = sorted(os.listdir(DATA_DIR))
+grad_cam = GradCAM(model)
+
+app = Flask(__name__)
+
+@app.route("/api/predict_product_authenticity", methods=["POST"])
+def predict_authenticity():
+    data = request.get_json()
+    if not data or "image_path" not in data:
+        return jsonify({"status": "error", "message": "Missing 'image_path' in request."}), 400
+
+    image_path = data["image_path"]
+    if not os.path.exists(image_path):
+        return jsonify({"status": "error", "message": f"Image not found: {image_path}"}), 404
+
+    try:
+        # Preprocess
+        img_tensor, img_np = preprocess_image(image_path)
+
+        # Predict + Grad-CAM
+        pred_class, sim_score, cam_mask = predict_with_similarity_and_gradcam(
+            model, grad_cam, img_tensor, ref_embeddings, ref_labels, class_names, threshold=SIMILARITY_THRESHOLD
+        )
+
+        # Save Grad-CAM image
+        cam_overlay = show_cam_on_image(img_np, cam_mask)
+        output_file = os.path.join(GRADCAM_OUTPUT_DIR, f"gradcam_{os.path.basename(image_path)}")
+        cv2.imwrite(output_file, cam_overlay)
+
+        return jsonify({
+            "status": "success",
+            "predicted_class": pred_class,
+            "similarity_score": round(sim_score, 4),
+            "gradcam_image_path": output_file
+        })
+
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
 
 
 if __name__ == "__main__":
