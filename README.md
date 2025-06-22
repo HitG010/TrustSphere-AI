@@ -1,4 +1,4 @@
-![TrustSphere Logo](assets\trustSphereLogo1.png)
+![TrustSphere Logo](./assets/trustSphereLogo1.png)
 
 ## TrustSphere AI Demo Video
 * You will regret missing this demo video! Click on the thumbnail below to watch it now!
@@ -31,6 +31,7 @@ We leverage **LLMs**, **Computer Vision**, **Graph Intelligence**, and **Explain
 - Detects reused images, manipulated branding, and fake barcodes
 - Siamese networks + Grad-CAM to highlight mismatched or reused assets
 - Tech Stack: `HuggingFace ViT`, `Grad-CAM`, `OpenCV`
+  
 ![Computer Vision + Explainability Output](./assets/pumaFake.jpg)
 ![CV Architecture](./assets/cvArchitecture.png)
 
@@ -39,6 +40,7 @@ We leverage **LLMs**, **Computer Vision**, **Graph Intelligence**, and **Explain
 - GNN-powered fraud ring detection across millions of user-product interactions
 - IP clustering and suspicious co-reviewing behavior modeling
 - Tech Stack: `Neo4j`, `PyTorch Geometric`, `Graph Neural Networks`
+
 ![Graph-Based Seller Networks](./assets/gnnImg.jpg)
 <img src="./assets/gnnArchitecture.png" alt="GNN Architecture" width="200"/>
 
@@ -49,11 +51,13 @@ We leverage **LLMs**, **Computer Vision**, **Graph Intelligence**, and **Explain
   - GNN anomaly signals and image-based inconsistencies
 - Powers moderation decisions and visibility rankings
 - Tech Stack: `Flask`, `SQLAlchemy`, `Redis`
+
 ![Trust Score Engine](./assets/trustEngineArchitecture.png)
 
 ### 🔍 Explainable AI Layer
 - Review decisions are explained using **LIME** for LLM-based flags
 - Image-based flags are explained using **Grad-CAM** visualizations
+
 ![LIME Output](./assets/LIMEOutput.jpg) ![Grad-CAM Output](./assets/gradCAMOutput.png)
 
 ---
@@ -80,7 +84,7 @@ We leverage **LLMs**, **Computer Vision**, **Graph Intelligence**, and **Explain
 ├── assets/                # Images, logos, and other static assets
 ├── README.md              # You're here!
 └── requirements.txt
-└── package.json           # Backend dependencies
+└── package.json
 ```
 
 ---
