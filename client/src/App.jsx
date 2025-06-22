@@ -3,10 +3,11 @@ import TrustSphereLayout from './components/trustSphereLayout/layout';
 import ReviewAnalyzer from './pages/reviewAnalyzer';
 import TrustGraph from './pages/trustGraph';
 import LogoUpload from './pages/logoChecker';
-
+import Landing from './pages/landing';
 export default function App() {
   return (
     <Routes>
+      <Route path="/" element={<Landing />} />
       <Route path="/trustsphere" element={<TrustSphereLayout />}>
         <Route path="reviewAnalyzer" element={<ReviewAnalyzer />} />
         <Route path="logoChecker" element={<LogoUpload/>}/>
