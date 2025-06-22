@@ -11,3 +11,25 @@ body {
     --font-instrument : 'Instrument Serif', serif;
     --font-urbanist : 'Urbanist', sans-serif;
 }
+
+::-webkit-scrollbar {
+  width: 6px; /* Width of the scrollbar */
+  height: 6px; /* Height of the scrollbar (for horizontal scrollbars) */
+}
+
+/* Track (background of the scrollbar) */
+::-webkit-scrollbar-track {
+  background: #f0f0f020; /* Light gray background */
+  border-radius: 10px; /* Rounded corners */
+}
+
+/* Thumb (scroll handle) */
+::-webkit-scrollbar-thumb {
+  background: #ffffff45; /* Darker gray */
+  border-radius: 10px; /* Rounded corners */
+}
+
+/* Thumb hover effect */
+::-webkit-scrollbar-thumb:hover {
+  background: #444; /* Even darker gray */
+}

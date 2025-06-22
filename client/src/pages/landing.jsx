@@ -1,13 +1,16 @@
 import React from 'react'
 import LandingNavbar from '../components/LandingNavbar';
 import trustLandingBg from '../assets/trustLandingBg.png';
+import trustLandingTileFeatures from '../assets/trustLandingTileFeatures.png';
 import { Link } from 'react-router-dom';
 import { FaArrowRight, FaGithub, FaRightLong } from 'react-icons/fa6';
 
 function landing() {
   return (
+    <div style={{ backgroundImage: `url(${trustLandingBg})`, backgroundSize: 'cover', backgroundPosition: 'center', overflow: 'hidden', backgroundRepeat: 'no-repeat' }} className='w-full h-screen'>
+    <div className='overflow-y-scroll w-full h-screen'>
     <div className="flex flex-col items-center justify-center h-screen font-semibold"
-    style={{ backgroundImage: `url(${trustLandingBg})`, backgroundSize: 'cover', backgroundPosition: 'center', }}>
+    >
         <LandingNavbar />
         <h1 className="text-lg mb-4 rounded rounded-full bg-white/5 border border-1 border-[#FF891070] py-0.5 px-4"><span className='font-instrument italic font-light'>From review to return — monitor it all, intelligently.</span></h1>
         <h1 className="text-6xl mb-1"><span className='font-instrument italic font-light text-[#FF8910]'>Trust</span> Isn't Just Earned,</h1>
@@ -20,6 +23,11 @@ function landing() {
             <Link to="https://github.com/HitG010/TrustSphere-AI" className="rounded-md border border-white/25 text-white px-4 py-2 rounded flex items-center gap-2 w-fit justify-center hover:bg-white/15 transition-all duration-300"><FaGithub className='w-4 h-4'/> Github</Link>
             <Link to="https://github.com/HitG010/TrustSphere-AI" className="rounded-md border border-white/25 text-black bg-white px-4 py-2 rounded  flex items-center gap-2 w-fit justify-center hover:bg-white/65 transition-all duration-300"> Get Started <FaArrowRight className='w-4 h-4'/></Link>
         </div>
+    </div>
+    <div className='mt-[-100px] flex flex-col items-center justify-center h-screen font-semibold'>
+        <img src={trustLandingTileFeatures} alt="TrustSphere AI Features" className='scale-45 h-auto rounded-lg' />
+    </div>
+    </div>
     </div>
   )
 }
