@@ -13,9 +13,10 @@ router.post('/', async (req, res) => {
 
     try {
         const result = await analyzeReview(review);
+        console.log("Result from analyzeReview:", result);
         res.json(result);
     } catch(e) {
-        console.log(e);
+        console.error("Error in review API:", e.message);
         
         res.status(500).json({
             error: e.message

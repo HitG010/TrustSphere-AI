@@ -2,7 +2,7 @@
 *.pth
 trustAI
 __pycache__
-*.json
+
 *.jsonl
 *pkl
 *.csv
@@ -14,10 +14,12 @@ __pycache__
 *.pyc
 *.pyo
 *gpickle
-*.json
+
 *.log
 *.csv
 *.jsonl
+server\models\Review_Analysis_LLM\All_Beauty.jsonl
+server\models\Review_Analysis_LLM\faiss_review_index
 .env
 
 trustAI

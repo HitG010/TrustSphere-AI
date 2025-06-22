@@ -4,7 +4,7 @@ import Navbar from "../navbar"
 function TrustSphereLayout() {
     console.log("Layout rendered");
     
-    return <div className="flex flex-col bg-white overflow-hidden">
+    return <div className="flex flex-col overflow-hidden">
         <Navbar/>
         <main className="flex flex-col w-full">
             <Outlet/>

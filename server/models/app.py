@@ -216,7 +216,6 @@ def detect_logo_from_path():
 from difflib import SequenceMatcher
 import easyocr
 
-app = Flask(__name__)
 
 class OCRMatcher:
     def __init__(self, languages=['en'], use_gpu=False, threshold=0.6):

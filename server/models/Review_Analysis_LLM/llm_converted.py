@@ -24,12 +24,12 @@ LANGSMITH_API_KEY = os.getenv("LANGSMITH_API_KEY")
 LANGSMITH_PROJECT = os.getenv("LANGSMITH_PROJECT")
 LANGSMITH_TRACING = os.getenv("LANGSMITH_TRACING")
 LANGSMITH_ENDPOINT = os.getenv("LANGSMITH_ENDPOINT")
-os.environ["HUGGINGFACE_API_KEY"] = HUGGINGFACE_API_KEY
+os.environ["HUGGINGFACE_API_KEY"] = "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"
 os.environ["GROQ_API_KEY"] = "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"
-os.environ["LANGSMITH_API_KEY"] = LANGSMITH_API_KEY
-os.environ["LANGSMITH_PROJECT"] = LANGSMITH_PROJECT
-os.environ["LANGSMITH_TRACING"] = LANGSMITH_TRACING
-os.environ["LANGSMITH_ENDPOINT"] = LANGSMITH_ENDPOINT
+os.environ["LANGSMITH_API_KEY"] = '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'
+os.environ["LANGSMITH_PROJECT"] = 'pr-grumpy-might-60'
+os.environ["LANGSMITH_TRACING"] = "true"
+os.environ["LANGSMITH_ENDPOINT"] = "https://api.smith.langchain.com"
 
 import json
 import numpy as np
