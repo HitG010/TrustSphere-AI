@@ -15,7 +15,7 @@ export default function LogoUpload() {
         setFile(selected);
         setLogoResult(null);
         setOcrResult(null);
-        setError('');
+    setError('');
     };
 
     const handleLogoDetect = async () => {
@@ -32,12 +32,12 @@ export default function LogoUpload() {
 
         try {
             const response = await axios.post('http://localhost:5000/api/logo_check', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
+                headers: { 'Content-Type': 'multipart/form-data' },
             });
             setLogoResult(response.data);
-        } catch {
+            } catch {
             setError('Failed to detect logo');
-        } finally {
+            } finally {
             setLoadingLogo(false);
         }
     };
@@ -61,45 +61,55 @@ export default function LogoUpload() {
 
         try {
             const response = await axios.post('http://localhost:5000/api/ocr_match', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
+                headers: { 'Content-Type': 'multipart/form-data' },
             });
             setOcrResult(response.data);
-        } catch {
+            } catch {
             setError('Failed to perform OCR match');
-        } finally {
+            } finally {
             setLoadingOcr(false);
-        }
-    };
+            }
+        };
 
     return (
-        <div className="p-4 max-w-md mx-auto">
-            <h2 className="text-xl font-semibold mb-4">Upload Logo Image</h2>
+        <div className="bg-gray-950 min-h-screen px-6 py-10 text-white">
+        <h2 className="text-3xl font-semibold mb-10 text-cyan-300 text-center">Upload Logo Image</h2>
 
+        <div
+            className={`flex ${
+                logoResult || ocrResult ? 'flex-col md:flex-row' : 'items-center justify-center'
+            } gap-8 transition-all duration-500`}
+        >
+        <div
+                className={`${
+                logoResult || ocrResult ? 'w-full md:w-1/2' : 'w-full max-w-md'
+                } space-y-6 transition-all duration-500`}
+        >
             <div
-                className={`border-2 border-dashed rounded p-6 text-center cursor-pointer transition-all ${
-                    file ? 'border-green-500 bg-green-50' : 'border-gray-300'
+                className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all ${
+                    file ? 'border-cyan-500 bg-cyan-900' : 'border-gray-700 bg-gray-800'
                 }`}
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={(e) => {
                     e.preventDefault();
                     const droppedFile = e.dataTransfer.files[0];
                     if (droppedFile && droppedFile.type.startsWith('image/')) {
-                        setFile(droppedFile);
-                        setLogoResult(null);
-                        setOcrResult(null);
-                        setError('');
-                    }
+                    setFile(droppedFile);
+                    setLogoResult(null);
+                    setOcrResult(null);
+                    setError('');
+                }
                 }}
                 onClick={() => document.getElementById('fileInput').click()}
             >
-                <p className="text-gray-600">
-                    {file ? `Selected: ${file.name}` : 'Drag & drop an image here, or click to browse'}
+            <p className="text-gray-300">
+                {file ? `Selected: ${file.name}` : 'Drag & drop an image here, or click to browse'}
                 </p>
                 {file && (
                     <img
-                        src={URL.createObjectURL(file)}
-                        alt="preview"
-                        className="mx-auto mt-2 h-32 object-contain"
+                    src={URL.createObjectURL(file)}
+                    alt="preview"
+                    className="mx-auto mt-4 h-32 object-contain rounded-md shadow-lg"
                     />
                 )}
             </div>
@@ -115,14 +125,18 @@ export default function LogoUpload() {
             <button
                 onClick={handleLogoDetect}
                 disabled={loadingLogo}
-                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded w-full"
+                className={`py-3 rounded-full w-full text-lg font-semibold transition-colors ${
+                loadingLogo
+                    ? 'bg-cyan-800 cursor-not-allowed text-gray-300'
+                : 'bg-cyan-500 hover:bg-cyan-400 text-black'
+            }`}
             >
                 {loadingLogo ? 'Detecting Logo...' : 'Detect Logo'}
             </button>
 
-            <div className="mt-6">
-                <label className="block mb-1 font-medium" htmlFor="referenceText">
-                    Reference Text for OCR Match
+            <div>
+                <label htmlFor="referenceText" className="block mb-1 font-medium text-cyan-200">
+                Reference Text for OCR Match
                 </label>
                 <input
                     id="referenceText"
@@ -130,64 +144,66 @@ export default function LogoUpload() {
                     value={referenceText}
                     onChange={(e) => setReferenceText(e.target.value)}
                     placeholder="Enter expected logo text"
-                    className="w-full border border-gray-300 rounded px-3 py-2 mb-2"
+                    className="w-full px-4 py-3 rounded-xl bg-gray-900 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                 />
                 <button
                     onClick={handleOcrMatch}
                     disabled={loadingOcr}
-                    className="px-4 py-2 bg-green-600 text-white rounded w-full"
+                    className="mt-3 w-full py-3 bg-green-600 hover:bg-green-500 rounded-xl font-semibold transition-all"
                 >
-                    {loadingOcr ? 'Matching OCR...' : 'Perform OCR Match'}
+                {loadingOcr ? 'Matching OCR...' : 'Perform OCR Match'}
                 </button>
             </div>
 
-            {error && <p className="text-red-600 mt-3">{error}</p>}
-
-            {logoResult?.prediction && (
-                <div className="bg-white shadow-md rounded p-4 border border-gray-200 mt-6">
-                    <h3 className="text-lg font-bold mb-2">Logo Detection Result</h3>
-                    <div><strong>Detected Brand:</strong> {logoResult.prediction.predicted_label}</div>
-                    <div>
-                        <strong>Similarity Score:</strong> {(logoResult.prediction.similarity_score * 100).toFixed(1)}%
+            {error && <p className="text-red-500 font-medium">{error}</p>}
+            </div>
+            
+            {(logoResult || ocrResult) && (
+            <div className="w-full md:w-1/2 space-y-6">
+                {logoResult?.prediction && (
+                    <div className="bg-gray-900 border border-cyan-700 rounded-xl p-6 shadow-inner">
+                        <h3 className="text-xl font-bold mb-2 text-cyan-300">Logo Detection Result</h3>
+                        <div><strong>Detected Brand:</strong> {logoResult.prediction.predicted_label}</div>
+                        <div><strong>Similarity Score:</strong> {(logoResult.prediction.similarity_score * 100).toFixed(1)}%</div>
+                        <div><strong>Threshold:</strong> {(logoResult.prediction.threshold * 100).toFixed(1)}%</div>
+                        <div>
+                            <strong>Authentic:</strong>{' '}
+                            {logoResult.prediction.authentic ? (
+                                <span className="text-green-500 font-semibold">✔ Yes</span>
+                                ) : (
+                                <span className="text-red-500 font-semibold">✘ No</span>
+                                )}
+                        </div>
                     </div>
-                    <div><strong>Threshold:</strong> {(logoResult.prediction.threshold * 100).toFixed(1)}%</div>
-                    <div>
-                        <strong>Authentic:</strong>{' '}
-                        {logoResult.prediction.authentic ? (
-                            <span className="text-green-600 font-semibold">✔ Yes</span>
+                )}
+
+                {ocrResult?.result && (
+                    <div className="bg-gray-900 border border-green-700 rounded-xl p-6 shadow-inner">
+                        <h3 className="text-xl font-bold mb-2 text-green-300">OCR Match Result</h3>
+                        {ocrResult.result.extracted_text.trim() === '' ? (
+                            <div className="text-gray-400">No text detected in the logo image.</div>
                         ) : (
-                            <span className="text-red-600 font-semibold">✘ No</span>
+                            <>
+                                <div><strong>Extracted Text:</strong> {ocrResult.result.extracted_text}</div>
+                                <div><strong>Similarity Score:</strong> {(ocrResult.result.similarity_score * 100).toFixed(1)}%</div>
+                                <div>
+                                    <strong>Match:</strong>{' '}
+                                    {ocrResult.result.match ? (
+                                        <span className="text-green-500 font-semibold">✔ Yes</span>
+                                        ) : (
+                                        <span className="text-red-500 font-semibold">✘ No</span>
+                                    )}
+                                </div>
+                            <div><strong>Threshold:</strong> {(ocrResult.result.threshold * 100).toFixed(1)}%</div>
+                            </>
                         )}
                     </div>
-                </div>
-            )}
-
-            {ocrResult?.result && (
-                <div className="bg-white shadow-md rounded p-4 border border-gray-200 mt-6">
-                    <h3 className="text-lg font-bold mb-2">OCR Match Result</h3>
-                    {ocrResult.result.extracted_text.trim() === '' ? (
-                        <div className="text-gray-600">No text detected in the logo image.</div>
-                    ) : (
-                        <>
-                            <div><strong>Extracted Text:</strong> {ocrResult.result.extracted_text}</div>
-                            <div>
-                                <strong>Similarity Score:</strong> {(ocrResult.result.similarity_score * 100).toFixed(1)}%
-                            </div>
-                            <div>
-                                <strong>Match:</strong>{' '}
-                                {ocrResult.result.match ? (
-                                    <span className="text-green-600 font-semibold">✔ Yes</span>
-                                ) : (
-                                    <span className="text-red-600 font-semibold">✘ No</span>
-                                )}
-                            </div>
-                            <div><strong>Threshold:</strong> {(ocrResult.result.threshold * 100).toFixed(1)}%</div>
-                        </>
-                    )}
-                </div>
+                )}
+            </div>
         )}
-
-        </div>
+    </div>
+    </div>
     );
 }
+
 

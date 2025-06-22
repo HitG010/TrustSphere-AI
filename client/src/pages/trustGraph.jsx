@@ -95,79 +95,84 @@ export default function TrustGraph() {
     }, [graph, productId]);
 
     return (
-        <div className="w-full mx-auto px-4 py-8 items-center">
-            <h1 className="text-xl font-bold mb-4 text-center">Trust Graph</h1>
-            <div className="flex justify-center items-center">
-                <input
-                type="text"
-                value={productId}
-                onChange={(e) => setProductId(e.target.value)}
-                placeholder="Enter Product ID"
-                className="border p-2 mr-2 text-center"
-                />
-                <button type="button" onClick={fetchGraph} className="bg-blue-500 text-white px-4 py-2 ml-5">
-                    Fetch Graph
-                </button>
-                <button type="button" onClick={fetchTop3} className="bg-blue-500 text-white px-4 py-2 ml-5">
-                    Fetch Top 3 Rings
-                </button>
-            </div>
-            {message && (
-                <div className="mt-4 p-4 bg-yellow-100 text-yellow-800 rounded">
-                    {message}
-                </div>
-            )}
+        <div className="bg-gray-950 min-h-screen text-white px-6 py-10">
+    <h1 className="text-3xl font-bold text-center mb-8 text-white">Trust Graph</h1>
 
-            {graph && (
-                <div className="mt-6 border-t pt-6 h-[600px] w-full bg-white rounded shadow">
-                    <h2 className="text-lg font-semibold mb-2">Graph for Product: {productId}</h2>
-                    <div className="h-full w-full">
-                        <ReactFlow
-                            nodes={mainGraph.nodes}
-                            edges={mainGraph.edges}
-                            fitView
-                            fitViewOptions={{ padding: 0.2 }}
-                            proOptions={{ hideAttribution: true }}
-                        >
-                            <Controls />
-                            <Background />
-                        </ReactFlow>
-                    </div>
-                </div>
-            )}
+    <div className="flex flex-col md:flex-row md:justify-center md:items-center gap-4 mb-8">
+      <input
+        type="text"
+        value={productId}
+        onChange={(e) => setProductId(e.target.value)}
+        placeholder="Enter Product ID"
+        className="px-4 py-2 rounded bg-gray-800 text-white border border-gray-600 w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+      />
+      <button
+        onClick={fetchGraph}
+        className="bg-cyan-600 hover:bg-cyan-700 text-white px-5 py-2 rounded transition"
+      >
+        Fetch Graph
+      </button>
+      <button
+        onClick={fetchTop3}
+        className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded transition"
+      >
+        Fetch Top 3 Rings
+      </button>
+    </div>
 
-            {topRings.length > 0 && (
-                <div className="mt-6 border-t pt-6">
-                    <h2 className="text-lg font-semibold mb-4">Top 3 Rings</h2>
-                    {topRings.map((ring, idx) => {
-                        const { nodes, edges } = convertToReactFlowData(
-                            ring.nodes,
-                            ring.edges,
-                            ring.ring_id
-                        );
-                        return (
-                            <div
-                                key={ring.ring_id}
-                                className="mb-6 p-4 border rounded bg-gray-50"
-                            >
-                                <h3 className="font-medium mb-2">Ring #{idx + 1} — Ring ID: {ring.ring_id}</h3>
-                                <div className="h-[500px] w-full">
-                                    <ReactFlow
-                                        nodes={nodes}
-                                        edges={edges}
-                                        fitView
-                                        fitViewOptions={{ padding: 0.2 }}
-                                    >
-                                        <Controls />
-                                        <Background />
-                                    </ReactFlow>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            )}
+    {message && (
+      <div className="mb-6 p-4 rounded bg-yellow-100 text-yellow-900 text-center font-medium">
+        {message}
+      </div>
+    )}
+
+    {graph && (
+      <div className="bg-gray-900 p-6 rounded shadow-md w-full h-[600px]">
+        <h2 className="text-xl font-semibold mb-4 text-cyan-400">Graph for Product: {productId}</h2>
+        <div className="h-full w-full bg-gray-800 rounded">
+          <ReactFlow
+            nodes={mainGraph.nodes}
+            edges={mainGraph.edges}
+            fitView
+            fitViewOptions={{ padding: 0.2 }}
+            proOptions={{ hideAttribution: true }}
+          >
+            <Controls />
+            {/* <MiniMap /> */}
+            <Background />
+          </ReactFlow>
         </div>
+      </div>
+    )}
+
+    {topRings.length > 0 && (
+      <div className="mt-10">
+        <h2 className="text-2xl font-semibold mb-6 text-green-400 text-center">Top 3 Rings</h2>
+        {topRings.map((ring, idx) => {
+          const { nodes, edges } = convertToReactFlowData(ring.nodes, ring.edges, ring.ring_id);
+          return (
+            <div key={ring.ring_id} className="mb-10 p-6 bg-gray-900 rounded shadow-md">
+              <h3 className="text-lg font-medium text-white mb-2">
+                Ring #{idx + 1} — Ring ID: <span className="text-cyan-400">{ring.ring_id}</span>
+              </h3>
+              <div className="h-[500px] w-full bg-gray-800 rounded">
+                <ReactFlow
+                  nodes={nodes}
+                  edges={edges}
+                  fitView
+                  fitViewOptions={{ padding: 0.2 }}
+                >
+                  <Controls />
+                  {/* <MiniMap /> */}
+                  <Background />
+                </ReactFlow>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    )}
+  </div>
     );
 }
 

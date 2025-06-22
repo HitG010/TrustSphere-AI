@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 export default function ReviewAnalyzer() {
@@ -8,17 +8,19 @@ export default function ReviewAnalyzer() {
     const [asin, setAsin] = useState('');
     const [timestamp, setTimestamp] = useState('');
     const [loading, setLoading] = useState(false);
-    const [result, setResult] = useState("");
+    const [result, setResult] = useState('');
     const [error, setError] = useState('');
+    const [showModal, setShowModal] = useState(false);
 
     const handleAnalyze = async () => {
         if (!text.trim()) {
             setError('Review text is required.');
             return;
         }
+
         setError('');
         setLoading(true);
-        setResult("");
+        setResult('');
 
         const reviewPayload = {
             title: title || 'No Title',
@@ -29,86 +31,101 @@ export default function ReviewAnalyzer() {
                 timestamp: timestamp || new Date().toISOString(),
             },
         };
-        console.log("Sending review payload:", reviewPayload);
+
         try {
-            
-            const res = await axios.post('http://localhost:5000/api/review', {review: reviewPayload});
-            console.log("Request sent successfully");
-            
-            console.log(res);
-            if (res.data.status !== "success") {
-                console.log(res);
+            const res = await axios.post('http://localhost:5000/api/review', { review: reviewPayload });
+            if (res.data.status !== 'success') {
                 setError('Error analyzing review');
             } else {
                 setResult(res.data.analysis);
+                setShowModal(true);
             }
         } catch (e) {
-            console.log("frontend error", e);
             setError('Failed to analyze review');
         } finally {
             setLoading(false);
         }
     };
 
+
+    useEffect(() => {
+        document.body.style.overflow = showModal ? 'hidden' : 'auto';
+    }, [showModal]);
+
     return (
-        <div className="max-w-3xl mx-auto px-6 py-8 bg-gray-50 rounded shadow">
-        <h2 className="text-3xl font-semibold mb-6 text-gray-800">Analyze a Review</h2>
+        <div className="min-h-screen bg-gray-800 flex items-center justify-center px-4 pt-1 pb-18">
+            <div className="max-w-2xl mx-auto mt-10 mb-10 px-6 py-8 bg-black text-white rounded-2xl shadow-lg">
+            <h2 className="text-4xl font-semibold mb-6 text-center text-cyan-300">Review Analyzer</h2>
 
-        <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Review Title (optional)"
-            className="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
+            <div className="space-y-4">
+                <input
+                    type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Review Title (optional)"
+                    className="w-full bg-gray-800 text-white p-3 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                />
+                <textarea
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                    placeholder="Paste the review text *"
+                    className="w-full h-32 bg-gray-800 text-white p-3 rounded-xl border border-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                />
+                <input
+                    type="text"
+                    value={userId}
+                    onChange={(e) => setUserId(e.target.value)}
+                    placeholder="User ID (optional)"
+                    className="w-full bg-gray-800 text-white p-3 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                />
+                <input
+                    type="text"
+                    value={asin}
+                    onChange={(e) => setAsin(e.target.value)}
+                    placeholder="Product ASIN (optional)"
+                    className="w-full bg-gray-800 text-white p-3 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                />
+                <input
+                    type="datetime-local"
+                    value={timestamp}
+                    onChange={(e) => setTimestamp(e.target.value)}
+                    className="w-full bg-gray-800 text-white p-3 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                />
+                <button
+                    onClick={handleAnalyze}
+                    disabled={loading}
+                    className={`w-full py-3 text-lg font-semibold rounded-full transition-all duration-200 ${
+                        loading
+                            ? 'bg-gray-600 cursor-not-allowed'
+                            : 'bg-cyan-600 hover:bg-cyan-500 text-black'
+                    }`}
+                >
+                    {loading ? 'Analyzing...' : 'Analyze Review'}
+                </button>
 
-        <textarea
-            className="w-full h-32 p-3 mb-4 border border-gray-300 rounded resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"
-            placeholder="Paste the review text *"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-        />
-
-        <input
-            type="text"
-            value={userId}
-            onChange={(e) => setUserId(e.target.value)}
-            placeholder="User ID (optional)"
-            className="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-
-        <input
-            type="text"
-            value={asin}
-            onChange={(e) => setAsin(e.target.value)}
-            placeholder="Product ASIN (optional)"
-            className="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-
-        <input
-            type="datetime-local"
-            value={timestamp}
-            onChange={(e) => setTimestamp(e.target.value)}
-            placeholder="Review timestamp (optional)"
-            className="w-full p-3 mb-6 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-
-        <button
-            onClick={handleAnalyze}
-            disabled={loading}
-            className={`w-full py-3 text-white font-semibold rounded ${
-            loading ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
-            }`}
-        >
-            {loading ? 'Analyzing...' : 'Analyze'}
-        </button>
-
-        {error && <p className="mt-4 text-red-600 font-medium">{error}</p>}
-
-        {result && !error && (
-            <div className="mt-6 p-4 bg-white border border-gray-200 rounded shadow-sm">
-            <pre className="whitespace-pre-wrap text-gray-800">{result}</pre>
+                {error && <p className="text-red-400 text-center font-medium mt-4">{error}</p>}
             </div>
-        )}
-    </div>);
+
+
+            {showModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+                    <div className="bg-gray-900 text-white max-w-xl w-full p-6 rounded-2xl shadow-xl relative">
+                        <button
+                            onClick={() => setShowModal(false)}
+                            className="absolute top-3 right-3 text-gray-400 hover:text-white text-xl font-bold"
+                        >
+                            &times;
+                        </button>
+                        <h3 className="text-2xl font-bold mb-4 text-cyan-300 text-center">Analysis Result</h3>
+                        <pre className="whitespace-pre-wrap text-gray-200 max-h-[400px] overflow-y-auto">
+                            {result}
+                        </pre>
+                    </div>
+                </div>
+            )}
+            </div>
+        </div>
+    );
 }
+
+
