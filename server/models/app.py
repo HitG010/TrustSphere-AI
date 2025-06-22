@@ -307,8 +307,6 @@ ref_labels = torch.load(LABELS_PATH).to("cpu")
 class_names = sorted(os.listdir(DATA_DIR))
 grad_cam = GradCAM(model)
 
-app = Flask(__name__)
-
 @app.route("/api/predict_product_authenticity", methods=["POST"])
 def predict_authenticity():
     data = request.get_json()
