@@ -298,14 +298,14 @@ SIMILARITY_THRESHOLD = 0.7
 os.makedirs(GRADCAM_OUTPUT_DIR, exist_ok=True)
 
 # Load model and data once
-model = ResNetWithEmbedding(NUM_CLASSES).to(DEVICE)
-model.load_state_dict(torch.load(MODEL_WEIGHTS_PATH, map_location=DEVICE))
-model.eval()
+grad_model = ResNetWithEmbedding(NUM_CLASSES).to(DEVICE)
+grad_model.load_state_dict(torch.load(MODEL_WEIGHTS_PATH, map_location=DEVICE))
+grad_model.eval()
 
-ref_embeddings = torch.load(EMBEDDINGS_PATH).to("cpu")
-ref_labels = torch.load(LABELS_PATH).to("cpu")
+grad_ref_embeddings = torch.load(EMBEDDINGS_PATH).to("cpu")
+grad_ref_labels = torch.load(LABELS_PATH).to("cpu")
 class_names = sorted(os.listdir(DATA_DIR))
-grad_cam = GradCAM(model)
+grad_cam = GradCAM(grad_model)
 
 @app.route("/api/predict_product_authenticity", methods=["POST"])
 def predict_authenticity():
@@ -323,7 +323,7 @@ def predict_authenticity():
 
         # Predict + Grad-CAM
         pred_class, sim_score, cam_mask = predict_with_similarity_and_gradcam(
-            model, grad_cam, img_tensor, ref_embeddings, ref_labels, class_names, threshold=SIMILARITY_THRESHOLD
+            grad_model, grad_cam, img_tensor, grad_ref_embeddings, grad_ref_labels, class_names, threshold=SIMILARITY_THRESHOLD
         )
 
         # Save Grad-CAM image
