@@ -4,7 +4,7 @@ import cors from 'cors';
 import reviewRoutes from './routes/review.js';
 import logoRoutes from './routes/logoCheck.js';
 import graphRoutes from './routes/graph.js';
-import trustRoutes from './routes/trust.js';
+import ocrRoutes from './routes/ocrMatch.js';
 
 dotenv.config({path: './.env'})
 
@@ -17,7 +17,7 @@ app.use(express.json());
 app.use('/api/review', reviewRoutes);
 app.use('/api/logo_check', logoRoutes);
 app.use('/api/graph', graphRoutes);
-app.use('/api/trust', trustRoutes);
+app.use('/api/ocr_match', ocrRoutes)
 
 app.get('/', (req, res) => {
     res.send('TrustSphere Backend is running');
