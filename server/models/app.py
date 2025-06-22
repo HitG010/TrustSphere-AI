@@ -4,6 +4,7 @@ import networkx as nx
 import numpy as np
 import pickle
 from sklearn.metrics.pairwise import cosine_similarity
+from Review_Analysis_LLM.llm_converted import analyze_review
 
 app = Flask(__name__)
 
@@ -124,6 +125,158 @@ def get_rings():
         })
 
     return jsonify({"status": "success", "top_rings": response})
+
+
+
+@app.route("/api/analyze_review", methods=["POST"])
+def analyze_review_api():
+    try:
+        data = request.get_json()
+
+        if not data:
+            return jsonify({"status": "error", "message": "Missing JSON payload"}), 400
+
+        required_fields = ["title", "text", "metadata"]
+        if not all(field in data for field in required_fields):
+            return jsonify({"status": "error", "message": "Missing required fields"}), 400
+
+        review = {
+            "title": data["title"],
+            "text": data["text"],
+            "metadata": {
+                "user_id": data["metadata"].get("user_id", "unknown_user"),
+                "asin": data["metadata"].get("asin", "unknown_asin"),
+                "timestamp": data["metadata"].get("timestamp", datetime.now().isoformat())
+            }
+        }
+
+        result = analyze_review(review)
+        return jsonify({
+            "status": "success",
+            "analysis": result
+        })
+
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "message": str(e)
+        }), 500
+
+from Logo.model import get_model
+from Logo.config import SIMILARITY_THRESHOLD
+from Logo.utils.embedding_utils import load_embeddings
+from Logo.utils.image_utils import get_embedding
+import numpy as np
+import tempfile
+import os
+
+# Load model and reference embeddings once
+model = get_model()
+ref_embeddings, ref_labels = load_embeddings(model)
+
+def detect_brand(test_embedding, ref_embeddings, ref_labels, threshold=SIMILARITY_THRESHOLD):
+    sims = cosine_similarity(test_embedding, ref_embeddings)[0]
+    max_sim_idx = np.argmax(sims)
+    max_score = sims[max_sim_idx]
+    predicted_label = ref_labels[max_sim_idx]
+    is_authentic = bool(max_score >= threshold)
+
+    return {
+        "predicted_label": predicted_label,
+        "similarity_score": round(float(max_score), 4),
+        "authentic": is_authentic,
+        "threshold": threshold
+    }
+
+@app.route("/api/detect_logo", methods=["POST"])
+def detect_logo_from_path():
+    data = request.get_json()
+    if not data or "image_path" not in data:
+        return jsonify({"status": "error", "message": "Missing 'image_path' in request"}), 400
+
+    image_path = data["image_path"]
+
+    if not os.path.exists(image_path):
+        return jsonify({"status": "error", "message": f"File not found: {image_path}"}), 404
+
+    try:
+        test_embedding = get_embedding(image_path, model)
+        print(f"Test embedding shape: {test_embedding.shape}")
+        result = detect_brand(test_embedding, ref_embeddings, ref_labels)
+        print(f"Detection result: {result}")
+        return jsonify({
+            "status": "success",
+            "prediction": result
+        })
+
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+    
+    
+from difflib import SequenceMatcher
+import easyocr
+
+
+class OCRMatcher:
+    def __init__(self, languages=['en'], use_gpu=False, threshold=0.6):
+        self.reader = easyocr.Reader(languages, gpu=use_gpu)
+        self.threshold = threshold
+
+    def extract_text(self, image_path):
+        if not os.path.exists(image_path):
+            raise FileNotFoundError(f"File not found: {image_path}")
+        result = self.reader.readtext(image_path, detail=0)
+        extracted_text = " ".join(result)
+        return extracted_text
+
+    def compare_texts(self, ocr_text, reference_text):
+        similarity = SequenceMatcher(None, ocr_text.lower(), reference_text.lower()).ratio()
+        match = similarity >= self.threshold
+        return similarity, match
+
+    def run_match(self, image_path, reference_text):
+        ocr_text = self.extract_text(image_path)
+        similarity, match = self.compare_texts(ocr_text, reference_text)
+        return {
+            "extracted_text": ocr_text,
+            "similarity_score": round(similarity, 4),
+            "match": match,
+            "threshold": self.threshold
+        }
+
+matcher = OCRMatcher()
+
+@app.route("/api/ocr_match", methods=["POST"])
+def ocr_match():
+    data = request.get_json()
+
+    if not data or "image_path" not in data or "reference_text" not in data:
+        return jsonify({
+            "status": "error",
+            "message": "Missing required fields: 'image_path' and 'reference_text'"
+        }), 400
+
+    image_path = data["image_path"]
+    reference_text = data["reference_text"]
+
+    if not os.path.exists(image_path):
+        return jsonify({
+            "status": "error",
+            "message": f"File not found: {image_path}"
+        }), 404
+
+    try:
+        result = matcher.run_match(image_path, reference_text)
+        return jsonify({
+            "status": "success",
+            "result": result
+        })
+
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "message": str(e)
+        }), 500
 
 
 if __name__ == "__main__":

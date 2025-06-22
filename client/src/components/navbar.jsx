@@ -8,9 +8,9 @@ export default function Navbar() {
         <nav className="bg-white shadow-md px-4 py-3 flex justify-center items-center">
         <div className="hidden md:flex gap-6 text-gray-700">
             <Link to="/trustsphere/reviewAnalyzer" className="hover:text-blue-500">Review Analyzer</Link>
-            <Link to="/trustsphere/imageChecker" className="hover:text-blue-500">Image Checker</Link>
+            <Link to="/trustsphere/logoChecker" className="hover:text-blue-500">Logo Detection</Link>
             <Link to="/trustsphere/trustGraph" className="hover:text-blue-500">Trust Graph</Link>
-            <Link to="/trustsphere/trustScore" className="hover:text-blue-500">Trust Score</Link>
+            {/* <Link to="/trustsphere/trustScore" className="hover:text-blue-500">Trust Score</Link> */}
         </div>
 
         {/* <div className="md:hidden">

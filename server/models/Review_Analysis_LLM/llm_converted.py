@@ -1,4 +1,4 @@
-
+ 
 # from langchain.chat_models import ChatOpenAI
 from langchain.agents import Tool, initialize_agent
 from langchain.vectorstores import FAISS
@@ -24,12 +24,12 @@ LANGSMITH_API_KEY = os.getenv("LANGSMITH_API_KEY")
 LANGSMITH_PROJECT = os.getenv("LANGSMITH_PROJECT")
 LANGSMITH_TRACING = os.getenv("LANGSMITH_TRACING")
 LANGSMITH_ENDPOINT = os.getenv("LANGSMITH_ENDPOINT")
-os.environ["HUGGINGFACE_API_KEY"] = HUGGINGFACE_API_KEY
+os.environ["HUGGINGFACE_API_KEY"] = "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"
 os.environ["GROQ_API_KEY"] = "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"
-os.environ["LANGSMITH_API_KEY"] = LANGSMITH_API_KEY
-os.environ["LANGSMITH_PROJECT"] = LANGSMITH_PROJECT
-os.environ["LANGSMITH_TRACING"] = LANGSMITH_TRACING
-os.environ["LANGSMITH_ENDPOINT"] = LANGSMITH_ENDPOINT
+os.environ["LANGSMITH_API_KEY"] = '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'
+os.environ["LANGSMITH_PROJECT"] = 'pr-grumpy-might-60'
+os.environ["LANGSMITH_TRACING"] = "true"
+os.environ["LANGSMITH_ENDPOINT"] = "https://api.smith.langchain.com"
 
 import json
 import numpy as np
@@ -82,7 +82,7 @@ def add_embedding(review_title, review_text, metadata):
         page_content=f"{review_title}\n{review_text}",
         metadata=metadata
     )
-    faiss_index = FAISS.load_local("faiss_review_index", HuggingFaceEmbeddings(), allow_dangerous_deserialization=True)
+    faiss_index = FAISS.load_local("server/models/Review_Analysis_LLM/faiss_review_index", HuggingFaceEmbeddings(), allow_dangerous_deserialization=True)
     ### check if the review is already in the index
     existing_docs = faiss_index.similarity_search(
         query=review_title,
@@ -96,7 +96,7 @@ def check_review_spike(metadata):
     user_id = metadata.get("user_id")
     # vectorstore = FAISS.load_local("faiss_review_index", HuggingFaceEmbeddings())
     # faiss_review_index = FAISS(vectorstore=vectorstore)
-    faiss_index = FAISS.load_local("faiss_review_index", HuggingFaceEmbeddings(), allow_dangerous_deserialization=True)
+    faiss_index = FAISS.load_local("server/models/Review_Analysis_LLM/faiss_review_index", HuggingFaceEmbeddings(), allow_dangerous_deserialization=True)
     user_reviews = faiss_index.similarity_search(
         query=".",
         k=100,
@@ -180,7 +180,7 @@ def similarity_search_tool(review_str):
     full_review = fields["title"] + ". " + fields["text"]
 
     embedding = HuggingFaceEmbeddings().embed_query(full_review)
-    faiss_index = FAISS.load_local("faiss_review_index", HuggingFaceEmbeddings(), allow_dangerous_deserialization=True)
+    faiss_index = FAISS.load_local("server/models/Review_Analysis_LLM/faiss_review_index", HuggingFaceEmbeddings(), allow_dangerous_deserialization=True)
     results = faiss_index.similarity_search_by_vector(embedding, k=3)
     # similar_reviews = [res.page_content for res in results]
     similar_reviews = []
@@ -314,4 +314,3 @@ def analyze_review(review):
     
     response = chain.invoke({"input": review_input})
     return response["output"]
-
