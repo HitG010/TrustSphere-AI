@@ -115,12 +115,15 @@ def get_rings():
     # Default: return top 3 suspicious rings
     response = []
     for i, ring in enumerate(sorted_rings[:3]):
+        print(ring)
         users = ring['users']
+        # products = ring['products']
         score = score_ring(G, users)
         nodes, edges = get_subgraph_data(G, users)
         response.append({
             "ring_id": i + 1,
             "users": users,
+            "products": ring["products_reviewed"],
             "score": score,
             "nodes": nodes,
             "edges": edges
