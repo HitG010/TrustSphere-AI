@@ -23,7 +23,11 @@ We leverage **LLMs**, **Computer Vision**, **Graph Intelligence**, and **Explain
 ### ✅ Review Analysis with LLMs + LangChain
 - Analyze sentiment, detect AI-generated content, and flag suspicious reviews
 - Uses similarity search (FAISS + embeddings) to detect review spamming
-- Tech Stack: `LangChain`, `HuggingFace Transformers`, `FAISS`, `Kafka`, `AWS Lambda`
+- Tech Stack: `LangChain`, `HuggingFace Transformers`, `FAISS`, `Kafka`, `AWS Lambda`, `Pinecone`, `AWS SageMaker`
+>**💡 How it scales?**
+> - Uses `Pinecone` for fast vector similarity lookups
+> - Batched and async LLM inference with `LangChain` + `SageMaker` endpoints
+> - Review ingestion is streamed via `Kafka` Streams to ensure real-time processing
 
 ![LLM Review Analysis](./assets/llmReviewAnalysisArchitecture.png)
 
@@ -31,7 +35,11 @@ We leverage **LLMs**, **Computer Vision**, **Graph Intelligence**, and **Explain
 - Identify counterfeit packaging via product image analysis
 - Detects reused images, manipulated branding, and fake barcodes
 - Siamese networks + Grad-CAM to highlight mismatched or reused assets
-- Tech Stack: `HuggingFace ViT`, `Grad-CAM`, `OpenCV`
+- Tech Stack: `HuggingFace ViT`, `Grad-CAM`, `OpenCV`, `SageMaker`, `AWS Lambda`, `Amazon S3`, `CloudFront`
+>**💡 How it scales?**
+> - Images are stored on `Amazon S3` and served via `CloudFront`
+> - Inference runs on GPU-backed `SageMaker` endpoints with auto-scaling
+> - **Precomputed visual embeddings** reduce real-time load
   
 ![Computer Vision + Explainability Output](./assets/pumaFake.jpg)
 ![CV Architecture](./assets/cvArchitecture.png)
@@ -40,7 +48,10 @@ We leverage **LLMs**, **Computer Vision**, **Graph Intelligence**, and **Explain
 - Builds seller-buyer-review graphs to detect **review farms** and **fraud rings**
 - GNN-powered fraud ring detection across millions of user-product interactions
 - IP clustering and suspicious co-reviewing behavior modeling
-- Tech Stack: `Neo4j`, `PyTorch Geometric`, `Graph Neural Networks`
+- Tech Stack: `PyTorch Geometric`, `Graph Neural Networks`, `Kafka`, `AWS SageMaker`
+> **💡 How it scales?**
+> - Scheduled GNN training using `SageMaker` + GPU instances
+> - Real-time edges can be streamed into the graph via `Kafka`
 
 ![Graph-Based Seller Networks](./assets/gnnImg.jpg)
 <img src="./assets/gnnArchitecture.png" alt="GNN Architecture" width="200"/>
@@ -52,6 +63,9 @@ We leverage **LLMs**, **Computer Vision**, **Graph Intelligence**, and **Explain
   - GNN anomaly signals and image-based inconsistencies
 - Powers moderation decisions and visibility rankings
 - Tech Stack: `Flask`, `SQLAlchemy`, `Redis`
+> **💡 How it scales?**
+> - Uses `Redis` for fast in-memory trust score caching
+> - Trust score logic is stateless and runs on `AWS Lambda` containers
 
 ![Trust Score Engine](./assets/trustEngineArchitecture.png)
 
@@ -149,16 +163,6 @@ python server/models/app.py
 ```
 
 And then naivgate to `http://localhost:5173` in your browser to access the TrustSphere platform.
-
----
-
-## ⚖️ Scalability Considerations
-
-* ⚙️ **Vector Search** via FAISS with product-level metadata filtering
-* 🌐 **LLM Agents** powered via LangChain; scalable with async chains or FastAPI batching
-* ☁️ **Real-time Upgrade Plan** with AWS Kinesis + Lambda pipelines (future)
-* 📈 **Horizontally scalable** graph detection models via GNNs trained on GPU clusters
-* 🔍 Modular microservice architecture enables independent scaling per feature (review vs. CV vs. graph)
 
 ---
 
