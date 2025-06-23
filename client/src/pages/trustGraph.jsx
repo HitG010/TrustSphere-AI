@@ -2,6 +2,11 @@ import { useState, useMemo } from "react";
 import axios from "axios";
 import ReactFlow, { Controls, Background } from "reactflow";
 import "reactflow/dist/style.css";
+import CustomEdgeWithLabel from '../components/CustomEdgeWithLabel';
+
+const edgeTypes = {
+  custom: CustomEdgeWithLabel,
+};
 
 function convertToReactFlowData(nodes, edges, productId) {
     const centerX = 400;
@@ -12,18 +17,21 @@ function convertToReactFlowData(nodes, edges, productId) {
     const rfNodes = [];
     const rfEdges = [];
 
+    // Center product node
     rfNodes.push({
         id: centerNodeId,
         position: { x: centerX, y: centerY },
         data: { label: `Product: ${centerNodeId}` },
     });
 
+    // Filter out product node from user nodes
     const userNodes = nodes.filter(
         (n) =>
             n.id?.toString() !== centerNodeId &&
             n.userId?.toString() !== centerNodeId
     );
 
+    // Position user nodes in a circle
     userNodes.forEach((node, index) => {
         const angle = (2 * Math.PI * index) / userNodes.length;
         const x = centerX + radius * Math.cos(angle);
@@ -36,17 +44,33 @@ function convertToReactFlowData(nodes, edges, productId) {
             position: { x, y },
             data: { label: node.label || node.userId || node.id || "User" },
         });
+    });
+
+    // Build edges with numeric rating label
+    edges.forEach((edge, index) => {
+        const source = edge.source.toString();
+        const target = edge.target.toString();
+        const rating = edge.rating;
+
+        // Determine the user side of the edge
+        const userId = source === productId ? target : source;
 
         rfEdges.push({
-            id: `e-${id}-${centerNodeId}`,
-            source: id,
-            target: centerNodeId,
-            animated: true,
+          id: `e-${userId}-${productId}-${index}`,
+          source: userId,
+          target: productId,
+          type: "custom", // 👈 IMPORTANT
+          label: `${rating}`,
+          animated: true,
+          style: { stroke: "#00FFFF" },
         });
+
     });
 
     return { nodes: rfNodes, edges: rfEdges };
 }
+
+
 
 export default function TrustGraph() {
     const [productId, setProductId] = useState("");
@@ -81,6 +105,7 @@ export default function TrustGraph() {
     const fetchTop3 = async () => {
         try {
             const res = await axios.post("http://localhost:5000/api/graph");
+            console.log(res);
             setMessage("");
             setTopRings(res.data.top_rings);
             setGraph(null);
@@ -135,14 +160,15 @@ export default function TrustGraph() {
                         {/* Graph */}
                         <div className="h-[600px] w-full md:w-3/4 bg-gray-800 rounded">
                             <ReactFlow
-                                nodes={mainGraph.nodes}
-                                edges={mainGraph.edges}
-                                fitView
-                                fitViewOptions={{ padding: 0.2 }}
-                                proOptions={{ hideAttribution: true }}
+                              nodes={mainGraph.nodes}
+                              edges={mainGraph.edges}
+                              edgeTypes={edgeTypes}
+                              fitView
+                              fitViewOptions={{ padding: 0.2 }}
+                              proOptions={{ hideAttribution: true }}
                             >
-                                <Controls />
-                                <Background />
+                              <Controls />
+                              <Background />
                             </ReactFlow>
                         </div>
 
@@ -189,8 +215,10 @@ export default function TrustGraph() {
                                         <ReactFlow
                                             nodes={nodes}
                                             edges={edges}
+                                            edgeTypes={edgeTypes}
                                             fitView
                                             fitViewOptions={{ padding: 0.2 }}
+                                            proOptions={{ hideAttribution: true }}
                                         >
                                             <Controls />
                                             <Background />
